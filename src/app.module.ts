@@ -2,6 +2,11 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
+import { RolesModule } from './roles/roles.module';
+import { DepartamentosModule } from './departamentos/departamentos.module';
+import { MunicipiosModule } from './municipios/municipios.module';
+
+
 
 @Module({
   imports: [
@@ -19,6 +24,10 @@ import { AppController } from './app.controller';
       autoLoadEntities: true,
       synchronize: true,
     }),
+
+     RolesModule,
+     DepartamentosModule,
+     MunicipiosModule
   ],
   controllers: [AppController],
 })
