@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { RolesModule } from './roles/roles.module';
 import { DepartamentosModule } from './departamentos/departamentos.module';
 import { MunicipiosModule } from './municipios/municipios.module';
+import { SucursalesModule } from './sucursales/sucursales.module';
 
 
 
@@ -27,7 +28,8 @@ import { MunicipiosModule } from './municipios/municipios.module';
 
      RolesModule,
      DepartamentosModule,
-     MunicipiosModule
+     MunicipiosModule,
+     SucursalesModule
   ],
   controllers: [AppController],
 })
