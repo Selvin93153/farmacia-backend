@@ -7,6 +7,7 @@ import { DepartamentosModule } from './departamentos/departamentos.module';
 import { MunicipiosModule } from './municipios/municipios.module';
 import { SucursalesModule } from './sucursales/sucursales.module';
 import { UsuariosModule } from './usuarios/usuarios.module';
+import { AuthModule } from './auth/auth.module';
 
 
 
@@ -31,7 +32,8 @@ import { UsuariosModule } from './usuarios/usuarios.module';
      DepartamentosModule,
      MunicipiosModule,
      SucursalesModule,
-     UsuariosModule
+     UsuariosModule,
+     AuthModule
   ],
   controllers: [AppController],
 })
