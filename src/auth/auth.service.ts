@@ -68,4 +68,30 @@ export class AuthService {
       },
     };
   }
+
+
+  async me(id_usuario: number) {
+  const usuario = await this.usuarioRepository.findOne({
+    where: {
+      id_usuario,
+      estado: 'ACTIVO',
+    },
+    relations: {
+      rol: true,
+      sucursal: {
+        municipio: {
+          departamento: true,
+        },
+      },
+    },
+  });
+
+  if (!usuario) {
+    throw new UnauthorizedException(
+      'El usuario ya no está disponible',
+    );
+  }
+
+  return usuario;
+}
 }
