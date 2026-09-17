@@ -11,7 +11,8 @@ import { AuthModule } from './auth/auth.module';
 import { MedicamentosModule } from './medicamentos/medicamentos.module';
 import { InventariosModule } from './inventarios/inventarios.module';
 import { MovimientosInventarioModule } from './movimientos-inventario/movimientos-inventario.module';
-
+import { FormasPagoModule } from './formas-pago/formas-pago.module';
+import { EmpleadosModule } from './empleados/empleados.module';
 
 @Module({
   imports: [
@@ -38,7 +39,9 @@ import { MovimientosInventarioModule } from './movimientos-inventario/movimiento
      AuthModule,
      MedicamentosModule,
      InventariosModule,
-     MovimientosInventarioModule
+     MovimientosInventarioModule,
+     FormasPagoModule,
+     EmpleadosModule
   ],
   controllers: [AppController],
 })
