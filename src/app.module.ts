@@ -9,6 +9,7 @@ import { SucursalesModule } from './sucursales/sucursales.module';
 import { UsuariosModule } from './usuarios/usuarios.module';
 import { AuthModule } from './auth/auth.module';
 import { MedicamentosModule } from './medicamentos/medicamentos.module';
+import { InventariosModule } from './inventarios/inventarios.module';
 
 
 
@@ -35,7 +36,8 @@ import { MedicamentosModule } from './medicamentos/medicamentos.module';
      SucursalesModule,
      UsuariosModule,
      AuthModule,
-     MedicamentosModule
+     MedicamentosModule,
+     InventariosModule
   ],
   controllers: [AppController],
 })
