@@ -10,7 +10,7 @@ import { UsuariosModule } from './usuarios/usuarios.module';
 import { AuthModule } from './auth/auth.module';
 import { MedicamentosModule } from './medicamentos/medicamentos.module';
 import { InventariosModule } from './inventarios/inventarios.module';
-
+import { MovimientosInventarioModule } from './movimientos-inventario/movimientos-inventario.module';
 
 
 @Module({
@@ -37,7 +37,8 @@ import { InventariosModule } from './inventarios/inventarios.module';
      UsuariosModule,
      AuthModule,
      MedicamentosModule,
-     InventariosModule
+     InventariosModule,
+     MovimientosInventarioModule
   ],
   controllers: [AppController],
 })

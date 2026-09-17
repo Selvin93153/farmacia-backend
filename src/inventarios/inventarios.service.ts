@@ -110,43 +110,23 @@ export class InventariosService {
   ): Promise<Inventario> {
     await this.findOne(id);
 
-    if (
-      updateInventarioDto.id_sucursal !== undefined
-    ) {
-      await this.validarSucursal(
-        updateInventarioDto.id_sucursal,
-      );
-    }
+  const inventario =
+    await this.inventarioRepository.preload({
+      id_inventario: id,
+      ...updateInventarioDto,
+    });
 
-    if (
-      updateInventarioDto.id_medicamento !== undefined
-    ) {
-      await this.validarMedicamento(
-        updateInventarioDto.id_medicamento,
-      );
-    }
+  if (!inventario) {
+    throw new NotFoundException(
+      `El inventario con ID ${id} no existe`,
+    );
+  }
 
-    const inventario =
-      await this.inventarioRepository.preload({
-        id_inventario: id,
-        ...updateInventarioDto,
-      });
+  await this.inventarioRepository.save(inventario);
 
-    if (!inventario) {
-      throw new NotFoundException(
-        `El inventario con ID ${id} no existe`,
-      );
-    }
+  return this.findOne(id);
 
-    try {
-      await this.inventarioRepository.save(
-        inventario,
-      );
 
-      return this.findOne(id);
-    } catch (error) {
-      this.handleDatabaseError(error);
-    }
   }
 
   async remove(id: number): Promise<void> {
