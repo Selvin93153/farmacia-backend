@@ -13,6 +13,8 @@ import { InventariosModule } from './inventarios/inventarios.module';
 import { MovimientosInventarioModule } from './movimientos-inventario/movimientos-inventario.module';
 import { FormasPagoModule } from './formas-pago/formas-pago.module';
 import { EmpleadosModule } from './empleados/empleados.module';
+import { PlanillasModule } from './planillas/planillas.module';
+import { DetallesPlanillaModule } from './detalles-planilla/detalles-planilla.module';
 
 @Module({
   imports: [
@@ -41,7 +43,9 @@ import { EmpleadosModule } from './empleados/empleados.module';
      InventariosModule,
      MovimientosInventarioModule,
      FormasPagoModule,
-     EmpleadosModule
+     EmpleadosModule,
+     PlanillasModule,
+     DetallesPlanillaModule
   ],
   controllers: [AppController],
 })
