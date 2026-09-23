@@ -15,6 +15,9 @@ import { FormasPagoModule } from './formas-pago/formas-pago.module';
 import { EmpleadosModule } from './empleados/empleados.module';
 import { PlanillasModule } from './planillas/planillas.module';
 import { DetallesPlanillaModule } from './detalles-planilla/detalles-planilla.module';
+import { CajasModule } from './caja/cajas.module';
+import { VentasModule } from './ventas/ventas.module';
+import { DetallesVentaModule } from './detalles-venta/detalles-venta.module';
 
 @Module({
   imports: [
@@ -45,7 +48,10 @@ import { DetallesPlanillaModule } from './detalles-planilla/detalles-planilla.mo
      FormasPagoModule,
      EmpleadosModule,
      PlanillasModule,
-     DetallesPlanillaModule
+     DetallesPlanillaModule,
+     CajasModule,
+     VentasModule,
+     DetallesVentaModule
   ],
   controllers: [AppController],
 })
