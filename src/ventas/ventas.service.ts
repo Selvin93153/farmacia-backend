@@ -6,7 +6,11 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { QueryFailedError, Repository } from 'typeorm';
+import {
+  DataSource,
+  QueryFailedError,
+  Repository,
+} from 'typeorm';
 
 import { Venta } from './entities/venta.entity';
 import { CreateVentaDto } from './dto/create-venta.dto';
@@ -15,6 +19,9 @@ import { UpdateVentaDto } from './dto/update-venta.dto';
 import { Caja } from '../caja/entites/caja.entity';
 import { FormaPago } from '../formas-pago/entities/forma-pago.entity';
 import { Usuario } from '../usuarios/entities/usuario.entity';
+import { DetalleVenta } from '../detalles-venta/entities/detalle-venta.entity';
+import { Inventario } from '../inventarios/entities/inventario.entity';
+import { MovimientoInventario } from '../movimientos-inventario/entities/movimiento-inventario.entity';
 
 @Injectable()
 export class VentasService {
@@ -30,6 +37,8 @@ export class VentasService {
 
     @InjectRepository(Usuario)
     private readonly usuarioRepository: Repository<Usuario>,
+
+    private readonly dataSource: DataSource,
   ) {}
 
   async create(
@@ -190,6 +199,159 @@ export class VentasService {
     }
   }
 
+  async finalizar(
+    id: number,
+    id_usuario: number,
+  ): Promise<Venta> {
+    await this.dataSource.transaction(
+      async (manager) => {
+        const venta = await manager.findOne(
+          Venta,
+          {
+            where: {
+              id_venta: id,
+            },
+            lock: {
+              mode: 'pessimistic_write',
+            },
+          },
+        );
+
+        if (!venta) {
+          throw new NotFoundException(
+            `La venta con ID ${id} no existe`,
+          );
+        }
+
+        if (venta.estado !== 'BORRADOR') {
+          throw new BadRequestException(
+            'Solo se pueden finalizar ventas en estado BORRADOR',
+          );
+        }
+
+        const usuarioExiste =
+          await manager.exists(Usuario, {
+            where: {
+              id_usuario,
+              estado: 'ACTIVO',
+            },
+          });
+
+        if (!usuarioExiste) {
+          throw new UnauthorizedException(
+            'El usuario no está disponible',
+          );
+        }
+
+        const detalles = await manager.find(
+          DetalleVenta,
+          {
+            where: {
+              id_venta: id,
+            },
+          },
+        );
+
+        if (detalles.length === 0) {
+          throw new BadRequestException(
+            'La venta no tiene medicamentos agregados',
+          );
+        }
+
+        for (const detalle of detalles) {
+          const inventario =
+            await manager.findOne(
+              Inventario,
+              {
+                where: {
+                  id_sucursal:
+                    venta.id_sucursal,
+                  id_medicamento:
+                    detalle.id_medicamento,
+                },
+                lock: {
+                  mode: 'pessimistic_write',
+                },
+              },
+            );
+
+          if (!inventario) {
+            throw new BadRequestException(
+              `El medicamento con ID ${detalle.id_medicamento} no tiene inventario en esta sucursal`,
+            );
+          }
+
+          if (
+            inventario.stock_actual <
+            detalle.cantidad
+          ) {
+            throw new BadRequestException(
+              `No hay suficiente stock del medicamento con ID ${detalle.id_medicamento}`,
+            );
+          }
+
+          const stockAnterior =
+            inventario.stock_actual;
+
+          const stockNuevo =
+            stockAnterior - detalle.cantidad;
+
+          inventario.stock_actual =
+            stockNuevo;
+
+          await manager.save(
+            Inventario,
+            inventario,
+          );
+
+          const movimiento =
+            manager.create(
+              MovimientoInventario,
+              {
+                id_inventario:
+                  inventario.id_inventario,
+
+                id_usuario,
+
+                tipo_movimiento: 'SALIDA',
+
+                motivo: 'VENTA',
+
+                cantidad:
+                  detalle.cantidad,
+
+                stock_anterior:
+                  stockAnterior,
+
+                stock_nuevo:
+                  stockNuevo,
+
+                referencia:
+                  `VENTA-${venta.id_venta}`,
+
+                observacion:
+                  'Salida automática por venta',
+              },
+            );
+
+          await manager.save(
+            MovimientoInventario,
+            movimiento,
+          );
+        }
+
+        venta.estado = 'COMPLETADA';
+
+        await manager.save(
+          Venta,
+          venta,
+        );
+      },
+    );
+
+    return this.findOne(id);
+  }
+
   async remove(id: number): Promise<void> {
     const venta = await this.ventaRepository.findOne({
       where: {
@@ -234,9 +396,12 @@ export class VentasService {
     }
   }
 
-  private handleDatabaseError(error: unknown): never {
+  private handleDatabaseError(
+    error: unknown,
+  ): never {
     if (error instanceof QueryFailedError) {
-      const code = (error as any).driverError?.code;
+      const code =
+        (error as any).driverError?.code;
 
       if (code === '23503') {
         throw new ConflictException(

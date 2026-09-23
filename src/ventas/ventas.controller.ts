@@ -35,6 +35,20 @@ export class VentasController {
     );
   }
 
+  @Post(':id/finalizar')
+finalizar(
+  @Param('id', ParseIntPipe)
+  id: number,
+
+  @CurrentUser()
+  user: JwtPayload,
+) {
+  return this.ventasService.finalizar(
+    id,
+    user.sub,
+  );
+}
+
   @Get()
   findAll() {
     return this.ventasService.findAll();
