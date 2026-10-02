@@ -24,6 +24,8 @@ export class VentasController {
     private readonly ventasService: VentasService,
   ) {}
 
+
+
   @Post()
   create(
     @Body() createVentaDto: CreateVentaDto,
@@ -53,6 +55,16 @@ finalizar(
   findAll() {
     return this.ventasService.findAll();
   }
+
+
+  // Obtiene únicamente los medicamentos asociados a una venta específica.
+@Get(':id/detalles')
+findDetalles(
+  @Param('id', ParseIntPipe) id: number,
+) {
+  return this.ventasService.findDetalles(id)
+}
+
 
   @Get(':id')
   findOne(

@@ -24,6 +24,7 @@ import { Inventario } from '../inventarios/entities/inventario.entity';
 import { MovimientoInventario } from '../movimientos-inventario/entities/movimiento-inventario.entity';
 import { MovimientoCaja } from '../movimientos-caja/entities/movimiento-caja.entity';
 
+
 @Injectable()
 export class VentasService {
   constructor(
@@ -145,6 +146,40 @@ export class VentasService {
 
     return venta;
   }
+
+
+  // Obtiene únicamente los detalles pertenecientes a una venta específica.
+async findDetalles(
+  id: number,
+): Promise<DetalleVenta[]> {
+  const ventaExiste =
+    await this.ventaRepository.exists({
+      where: {
+        id_venta: id,
+      },
+    })
+
+  if (!ventaExiste) {
+    throw new NotFoundException(
+      `La venta con ID ${id} no existe`,
+    )
+  }
+
+  const detalleRepository =
+    this.dataSource.getRepository(DetalleVenta)
+
+  return detalleRepository.find({
+    where: {
+      id_venta: id,
+    },
+    relations: {
+      medicamento: true,
+    },
+    order: {
+      id_detalle_venta: 'ASC',
+    },
+  })
+}
 
   async update(
     id: number,
