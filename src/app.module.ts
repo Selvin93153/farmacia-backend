@@ -18,6 +18,7 @@ import { DetallesPlanillaModule } from './detalles-planilla/detalles-planilla.mo
 import { CajasModule } from './caja/cajas.module';
 import { VentasModule } from './ventas/ventas.module';
 import { DetallesVentaModule } from './detalles-venta/detalles-venta.module';
+import { MovimientosCajaModule } from './movimientos-caja/movimientos-caja.module';
 
 @Module({
   imports: [
@@ -51,7 +52,8 @@ import { DetallesVentaModule } from './detalles-venta/detalles-venta.module';
      DetallesPlanillaModule,
      CajasModule,
      VentasModule,
-     DetallesVentaModule
+     DetallesVentaModule,
+     MovimientosCajaModule
   ],
   controllers: [AppController],
 })
