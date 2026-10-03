@@ -11,6 +11,14 @@ export class Rol {
   @PrimaryGeneratedColumn()
   id!: number;
 
+   @Column({
+    type: 'varchar',
+    length: 30,
+    unique: true,
+    nullable: true,
+  })
+  codigo!: string | null;
+  
   @Column({ length: 50, unique: true })
   nombre!: string;
 
