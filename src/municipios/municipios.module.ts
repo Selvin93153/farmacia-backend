@@ -5,7 +5,7 @@ import { Municipio } from './entities/municipio.entity';
 import { Departamento } from '../departamentos/entities/departamento.entity';
 import { MunicipiosController } from './municipios.controller';
 import { MunicipiosService } from './municipios.service';
-
+import { MunicipiosSeederService } from './seed/municipios-seeder.service';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -17,7 +17,7 @@ import { MunicipiosService } from './municipios.service';
     MunicipiosController,
   ],
   providers: [
-    MunicipiosService,
+    MunicipiosService, MunicipiosSeederService,
   ],
   exports: [
     MunicipiosService,

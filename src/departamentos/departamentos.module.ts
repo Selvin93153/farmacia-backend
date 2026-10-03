@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Departamento } from './entities/departamento.entity';
 import { DepartamentosController } from './departamentos.controller';
 import { DepartamentosService } from './departamentos.service';
+import { DepartamentosSeederService } from './seed/departamentos-seeder.service';
 
 @Module({
   imports: [
@@ -13,7 +14,7 @@ import { DepartamentosService } from './departamentos.service';
     DepartamentosController,
   ],
   providers: [
-    DepartamentosService,
+    DepartamentosService, DepartamentosSeederService,
   ],
   exports: [
     DepartamentosService,
