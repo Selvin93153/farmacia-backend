@@ -56,6 +56,13 @@ finalizar(
     return this.ventasService.findAll();
   }
 
+  // Obtiene las ventas de la sucursal asignada al usuario autenticado.
+@Get('mi-sucursal')
+findMiSucursal(
+  @CurrentUser() user: JwtPayload,
+) {
+  return this.ventasService.findMiSucursal(user.sub);
+}
 
   // Obtiene únicamente los medicamentos asociados a una venta específica.
 @Get(':id/detalles')

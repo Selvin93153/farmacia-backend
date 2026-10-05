@@ -1,11 +1,13 @@
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QueryFailedError, Repository } from 'typeorm';
-
+import { Usuario } from '../usuarios/entities/usuario.entity';
 import { Caja } from '../caja/entites/caja.entity';  
 import { CreateCajaDto } from './dto/create-caja.dto';
 import { UpdateCajaDto } from './dto/update-caja.dto';
@@ -14,13 +16,16 @@ import { Sucursal } from '../sucursales/entities/sucursal.entity';
 
 @Injectable()
 export class CajasService {
-  constructor(
-    @InjectRepository(Caja)
-    private readonly cajaRepository: Repository<Caja>,
+ constructor(
+  @InjectRepository(Caja)
+  private readonly cajaRepository: Repository<Caja>,
 
-    @InjectRepository(Sucursal)
-    private readonly sucursalRepository: Repository<Sucursal>,
-  ) {}
+  @InjectRepository(Sucursal)
+  private readonly sucursalRepository: Repository<Sucursal>,
+
+  @InjectRepository(Usuario)
+  private readonly usuarioRepository: Repository<Usuario>,
+) {}
 
   async create(createCajaDto: CreateCajaDto): Promise<Caja> {
     await this.validarSucursal(createCajaDto.id_sucursal);
@@ -50,6 +55,44 @@ export class CajasService {
       },
     });
   }
+
+  // Consulta las cajas pertenecientes a la sucursal del usuario autenticado.
+async findMiSucursal(id_usuario: number): Promise<Caja[]> {
+  const usuario = await this.usuarioRepository.findOne({
+    where: {
+      id_usuario,
+      estado: 'ACTIVO',
+    },
+  });
+
+  if (!usuario) {
+    throw new UnauthorizedException(
+      'El usuario no existe o se encuentra inactivo',
+    );
+  }
+
+  if (usuario.id_sucursal == null) {
+    throw new ForbiddenException(
+      'El usuario no tiene una sucursal asignada',
+    );
+  }
+
+  return this.cajaRepository.find({
+    where: {
+      id_sucursal: usuario.id_sucursal,
+    },
+    relations: {
+      sucursal: {
+        municipio: {
+          departamento: true,
+        },
+      },
+    },
+    order: {
+      id_caja: 'ASC',
+    },
+  });
+}
 
   async findOne(id: number): Promise<Caja> {
     const caja = await this.cajaRepository.findOne({

@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  ForbiddenException,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -118,6 +119,50 @@ export class VentasService {
       },
     });
   }
+
+
+  // Consulta únicamente las ventas de la sucursal del usuario autenticado.
+async findMiSucursal(id_usuario: number): Promise<Venta[]> {
+  const usuario = await this.usuarioRepository.findOne({
+    where: {
+      id_usuario,
+      estado: 'ACTIVO',
+    },
+  });
+
+  if (!usuario) {
+    throw new UnauthorizedException(
+      'El usuario no existe o se encuentra inactivo',
+    );
+  }
+
+  if (usuario.id_sucursal == null) {
+    throw new ForbiddenException(
+      'El usuario no tiene una sucursal asignada',
+    );
+  }
+
+  return this.ventaRepository.find({
+    where: {
+      id_sucursal: usuario.id_sucursal,
+    },
+    relations: {
+      sucursal: {
+        municipio: {
+          departamento: true,
+        },
+      },
+      caja: true,
+      usuario: {
+        rol: true,
+      },
+      forma_pago: true,
+    },
+    order: {
+      fecha: 'DESC',
+    },
+  });
+}
 
   async findOne(id: number): Promise<Venta> {
     const venta = await this.ventaRepository.findOne({

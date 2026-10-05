@@ -14,6 +14,8 @@ import {
 import { CajasService } from './cajas.service';
 import { CreateCajaDto } from './dto/create-caja.dto';
 import { UpdateCajaDto } from './dto/update-caja.dto';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { JwtPayload } from '../auth/interfaces/jwt-payload.interface';
 
 @Controller('cajas')
 export class CajasController {
@@ -32,6 +34,14 @@ export class CajasController {
   findAll() {
     return this.cajasService.findAll();
   }
+
+  // Obtiene únicamente las cajas de la sucursal del usuario autenticado.
+@Get('mi-sucursal')
+findMiSucursal(
+  @CurrentUser() user: JwtPayload,
+) {
+  return this.cajasService.findMiSucursal(user.sub);
+}
 
   @Get(':id')
   findOne(
