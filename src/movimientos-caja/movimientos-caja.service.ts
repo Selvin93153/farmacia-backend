@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -9,7 +10,6 @@ import { QueryFailedError, Repository } from 'typeorm';
 
 import { MovimientoCaja } from './entities/movimiento-caja.entity';
 import { CreateMovimientoCajaDto } from './dto/create-movimiento-caja.dto';
-
 import { Caja } from '../caja/entites/caja.entity';
 import { Usuario } from '../usuarios/entities/usuario.entity';
 
@@ -26,10 +26,19 @@ export class MovimientosCajaService {
     private readonly usuarioRepository: Repository<Usuario>,
   ) {}
 
+  // Registra un ingreso/egreso manual y evita usar cajas de otra sucursal.
   async create(
     createMovimientoCajaDto: CreateMovimientoCajaDto,
     id_usuario: number,
   ): Promise<MovimientoCaja> {
+    const usuario = await this.usuarioRepository.findOne({
+      where: { id_usuario, estado: 'ACTIVO' },
+    });
+
+    if (!usuario) {
+      throw new UnauthorizedException('El usuario no está disponible');
+    }
+
     const caja = await this.cajaRepository.findOne({
       where: {
         id_caja: createMovimientoCajaDto.id_caja,
@@ -38,22 +47,11 @@ export class MovimientosCajaService {
     });
 
     if (!caja) {
-      throw new NotFoundException(
-        'La caja no existe o se encuentra inactiva',
-      );
+      throw new NotFoundException('La caja no existe o se encuentra inactiva');
     }
 
-    const usuarioExiste = await this.usuarioRepository.exists({
-      where: {
-        id_usuario,
-        estado: 'ACTIVO',
-      },
-    });
-
-    if (!usuarioExiste) {
-      throw new UnauthorizedException(
-        'El usuario no está disponible',
-      );
+    if (usuario.id_sucursal !== null && usuario.id_sucursal !== caja.id_sucursal) {
+      throw new ForbiddenException('No puedes registrar movimientos en otra sucursal');
     }
 
     try {
@@ -66,9 +64,7 @@ export class MovimientosCajaService {
         monto: createMovimientoCajaDto.monto,
       });
 
-      const guardado =
-        await this.movimientoCajaRepository.save(movimiento);
-
+      const guardado = await this.movimientoCajaRepository.save(movimiento);
       return this.findOne(guardado.id_movimiento_caja);
     } catch (error) {
       this.handleDatabaseError(error);
@@ -80,51 +76,63 @@ export class MovimientosCajaService {
       relations: {
         caja: {
           sucursal: {
-            municipio: {
-              departamento: true,
-            },
+            municipio: { departamento: true },
           },
         },
-        usuario: {
-          rol: true,
-        },
-        venta: {
-          forma_pago: true,
-        },
+        usuario: { rol: true },
+        venta: { forma_pago: true },
       },
-      order: {
-        fecha: 'DESC',
+      order: { fecha: 'DESC' },
+    });
+  }
+
+  // Filtra por la sucursal de la caja asociada; el usuario no envía la sucursal.
+  async findMiSucursal(id_usuario: number): Promise<MovimientoCaja[]> {
+    const usuario = await this.usuarioRepository.findOne({
+      where: { id_usuario, estado: 'ACTIVO' },
+    });
+
+    if (!usuario) {
+      throw new UnauthorizedException('El usuario no está disponible');
+    }
+
+    if (usuario.id_sucursal === null) {
+      throw new ForbiddenException('El usuario no tiene una sucursal asignada');
+    }
+
+    return this.movimientoCajaRepository.find({
+      where: {
+        caja: { id_sucursal: usuario.id_sucursal },
       },
+      relations: {
+        caja: {
+          sucursal: {
+            municipio: { departamento: true },
+          },
+        },
+        usuario: { rol: true },
+        venta: { forma_pago: true },
+      },
+      order: { fecha: 'DESC' },
     });
   }
 
   async findOne(id: number): Promise<MovimientoCaja> {
-    const movimiento =
-      await this.movimientoCajaRepository.findOne({
-        where: {
-          id_movimiento_caja: id,
-        },
-        relations: {
-          caja: {
-            sucursal: {
-              municipio: {
-                departamento: true,
-              },
-            },
-          },
-          usuario: {
-            rol: true,
-          },
-          venta: {
-            forma_pago: true,
+    const movimiento = await this.movimientoCajaRepository.findOne({
+      where: { id_movimiento_caja: id },
+      relations: {
+        caja: {
+          sucursal: {
+            municipio: { departamento: true },
           },
         },
-      });
+        usuario: { rol: true },
+        venta: { forma_pago: true },
+      },
+    });
 
     if (!movimiento) {
-      throw new NotFoundException(
-        `El movimiento de caja con ID ${id} no existe`,
-      );
+      throw new NotFoundException(`El movimiento de caja con ID ${id} no existe`);
     }
 
     return movimiento;
