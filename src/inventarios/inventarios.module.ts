@@ -7,6 +7,7 @@ import { Medicamento } from '../medicamentos/entities/medicamento.entity';
 
 import { InventariosController } from './inventarios.controller';
 import { InventariosService } from './inventarios.service';
+import { Usuario } from '../usuarios/entities/usuario.entity';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { InventariosService } from './inventarios.service';
       Inventario,
       Sucursal,
       Medicamento,
+      Usuario,
     ]),
   ],
   controllers: [

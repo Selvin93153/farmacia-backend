@@ -40,6 +40,14 @@ export class MovimientosInventarioController {
     return this.movimientosService.findAll();
   }
 
+  // Obtiene los movimientos de la sucursal del usuario autenticado.
+@Get('mi-sucursal')
+findMiSucursal(
+  @CurrentUser() user: JwtPayload,
+) {
+  return this.movimientosService.findMiSucursal(user.sub);
+}
+
   @Get(':id')
   findOne(
     @Param('id', ParseIntPipe)

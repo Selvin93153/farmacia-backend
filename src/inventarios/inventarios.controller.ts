@@ -15,6 +15,10 @@ import { InventariosService } from './inventarios.service';
 import { CreateInventarioDto } from './dto/create-inventario.dto';
 import { UpdateInventarioDto } from './dto/update-inventario.dto';
 
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { JwtPayload } from '../auth/interfaces/jwt-payload.interface';
+
+
 @Controller('inventarios')
 export class InventariosController {
   constructor(
@@ -35,6 +39,14 @@ export class InventariosController {
   findAll() {
     return this.inventariosService.findAll();
   }
+
+  // Obtiene los inventarios de la sucursal del usuario autenticado.
+@Get('mi-sucursal')
+findMiSucursal(
+  @CurrentUser() user: JwtPayload,
+) {
+  return this.inventariosService.findMiSucursal(user.sub);
+}
 
   @Get(':id')
   findOne(

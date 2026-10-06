@@ -1,13 +1,12 @@
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-  QueryFailedError,
-  Repository,
-} from 'typeorm';
+import { QueryFailedError, Repository,} from 'typeorm';
 
 import { Inventario } from './entities/inventario.entity';
 import { CreateInventarioDto } from './dto/create-inventario.dto';
@@ -15,19 +14,23 @@ import { UpdateInventarioDto } from './dto/update-inventario.dto';
 
 import { Sucursal } from '../sucursales/entities/sucursal.entity';
 import { Medicamento } from '../medicamentos/entities/medicamento.entity';
+import { Usuario } from '../usuarios/entities/usuario.entity';
 
 @Injectable()
 export class InventariosService {
-  constructor(
-    @InjectRepository(Inventario)
-    private readonly inventarioRepository: Repository<Inventario>,
+constructor(
+  @InjectRepository(Inventario)
+  private readonly inventarioRepository: Repository<Inventario>,
 
-    @InjectRepository(Sucursal)
-    private readonly sucursalRepository: Repository<Sucursal>,
+  @InjectRepository(Sucursal)
+  private readonly sucursalRepository: Repository<Sucursal>,
 
-    @InjectRepository(Medicamento)
-    private readonly medicamentoRepository: Repository<Medicamento>,
-  ) {}
+  @InjectRepository(Medicamento)
+  private readonly medicamentoRepository: Repository<Medicamento>,
+
+  @InjectRepository(Usuario)
+  private readonly usuarioRepository: Repository<Usuario>,
+) {}
 
   async create(
     createInventarioDto: CreateInventarioDto,
@@ -62,6 +65,46 @@ export class InventariosService {
   async findAll(): Promise<Inventario[]> {
     return this.inventarioRepository.find({
       relations: {
+      sucursal: {
+        municipio: {
+          departamento: true,
+        },
+      },
+      medicamento: true,
+    },
+    order: {
+      id_inventario: 'ASC',
+    },
+  });
+}
+
+
+// Consulta los inventarios de la sucursal asignada al usuario autenticado.
+async findMiSucursal(id_usuario: number): Promise<Inventario[]> {
+  const usuario = await this.usuarioRepository.findOne({
+    where: {
+      id_usuario,
+      estado: 'ACTIVO',
+    },
+  });
+
+  if (!usuario) {
+    throw new UnauthorizedException(
+      'El usuario no existe o se encuentra inactivo',
+    );
+  }
+
+  if (usuario.id_sucursal == null) {
+    throw new ForbiddenException(
+      'El usuario no tiene una sucursal asignada',
+    );
+  }
+
+  return this.inventarioRepository.find({
+    where: {
+      id_sucursal: usuario.id_sucursal,
+    },
+    relations: {
       sucursal: {
         municipio: {
           departamento: true,

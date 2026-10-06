@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -164,6 +165,55 @@ export class MovimientosInventarioService {
       },
     });
   }
+
+
+  // Consulta los movimientos de inventario de la sucursal del usuario autenticado.
+async findMiSucursal(
+  id_usuario: number,
+): Promise<MovimientoInventario[]> {
+  const usuario = await this.dataSource.manager.findOne(Usuario, {
+    where: {
+      id_usuario,
+      estado: 'ACTIVO',
+    },
+  });
+
+  if (!usuario) {
+    throw new UnauthorizedException(
+      'El usuario no existe o se encuentra inactivo',
+    );
+  }
+
+  if (usuario.id_sucursal == null) {
+    throw new ForbiddenException(
+      'El usuario no tiene una sucursal asignada',
+    );
+  }
+
+  return this.movimientoRepository.find({
+    where: {
+      inventario: {
+        id_sucursal: usuario.id_sucursal,
+      },
+    },
+    relations: {
+      inventario: {
+        sucursal: {
+          municipio: {
+            departamento: true,
+          },
+        },
+        medicamento: true,
+      },
+      usuario: {
+        rol: true,
+      },
+    },
+    order: {
+      fecha: 'DESC',
+    },
+  });
+}
 
   async findOne(
     id: number,
