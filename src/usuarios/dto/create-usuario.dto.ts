@@ -23,6 +23,12 @@ export class CreateUsuarioDto {
   @Min(1)
   id_sucursal?: number | null;
 
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  id_empleado?: number | null;
+
   @IsString()
   @IsNotEmpty()
   @MaxLength(100)

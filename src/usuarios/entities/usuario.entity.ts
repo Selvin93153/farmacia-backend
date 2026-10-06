@@ -4,11 +4,13 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
 import { Rol } from '../../roles/entities/rol.entity';
 import { Sucursal } from '../../sucursales/entities/sucursal.entity';
+import { Empleado } from '../../empleados/entities/empleado.entity';
 
 @Entity('usuarios')
 export class Usuario {
@@ -22,6 +24,13 @@ export class Usuario {
     nullable: true,
   })
   id_sucursal!: number | null;
+
+  @Column({
+    type: 'integer',
+    nullable: true,
+    unique: true,
+  })
+  id_empleado!: number | null;
 
   @Column({
     type: 'varchar',
@@ -88,4 +97,16 @@ export class Usuario {
     name: 'id_sucursal',
   })
   sucursal!: Sucursal | null;
+
+  @OneToOne(
+    () => Empleado,
+    {
+      nullable: true,
+      onDelete: 'RESTRICT',
+    },
+  )
+  @JoinColumn({
+    name: 'id_empleado',
+  })
+  empleado!: Empleado | null;
 }
