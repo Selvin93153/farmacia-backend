@@ -1,7 +1,9 @@
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
@@ -13,19 +15,22 @@ import { Empleado } from './entities/empleado.entity';
 import { CreateEmpleadoDto } from './dto/create-empleado.dto';
 import { UpdateEmpleadoDto } from './dto/update-empleado.dto';
 
+import { Usuario } from '../usuarios/entities/usuario.entity';
+
 import { Sucursal } from '../sucursales/entities/sucursal.entity';
 
 @Injectable()
 export class EmpleadosService {
-  constructor(
-    @InjectRepository(Empleado)
-    private readonly empleadoRepository:
-      Repository<Empleado>,
+ constructor(
+  @InjectRepository(Empleado)
+  private readonly empleadoRepository: Repository<Empleado>,
 
-    @InjectRepository(Sucursal)
-    private readonly sucursalRepository:
-      Repository<Sucursal>,
-  ) {}
+  @InjectRepository(Sucursal)
+  private readonly sucursalRepository: Repository<Sucursal>,
+
+  @InjectRepository(Usuario)
+  private readonly usuarioRepository: Repository<Usuario>,
+) {}
 
   async create(
     createEmpleadoDto: CreateEmpleadoDto,
@@ -67,6 +72,49 @@ export class EmpleadosService {
       },
     });
   }
+
+
+
+  // Consulta los empleados de la sucursal del usuario autenticado.
+async findMiSucursal(id_usuario: number): Promise<Empleado[]> {
+  const usuario = await this.usuarioRepository.findOne({
+    where: {
+      id_usuario,
+      estado: 'ACTIVO',
+    },
+  });
+
+  if (!usuario) {
+    throw new UnauthorizedException(
+      'El usuario no existe o se encuentra inactivo',
+    );
+  }
+
+  if (usuario.id_sucursal == null) {
+    throw new ForbiddenException(
+      'El usuario no tiene una sucursal asignada',
+    );
+  }
+
+  return this.empleadoRepository.find({
+    where: {
+      id_sucursal: usuario.id_sucursal,
+    },
+    relations: {
+      sucursal: {
+        municipio: {
+          departamento: true,
+        },
+      },
+    },
+    order: {
+      id_empleado: 'ASC',
+    },
+  });
+}
+
+
+
 
   async findOne(id: number): Promise<Empleado> {
     const empleado =

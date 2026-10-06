@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { Empleado } from './entities/empleado.entity';
 import { Sucursal } from '../sucursales/entities/sucursal.entity';
+import { Usuario } from '../usuarios/entities/usuario.entity';
 
 import { EmpleadosController } from './empleados.controller';
 import { EmpleadosService } from './empleados.service';
@@ -12,6 +13,7 @@ import { EmpleadosService } from './empleados.service';
     TypeOrmModule.forFeature([
       Empleado,
       Sucursal,
+      Usuario,
     ]),
   ],
   controllers: [

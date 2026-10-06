@@ -11,6 +11,9 @@ import {
   Post,
 } from '@nestjs/common';
 
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { JwtPayload } from '../auth/interfaces/jwt-payload.interface';
+
 import { EmpleadosService } from './empleados.service';
 import { CreateEmpleadoDto } from './dto/create-empleado.dto';
 import { UpdateEmpleadoDto } from './dto/update-empleado.dto';
@@ -36,6 +39,13 @@ export class EmpleadosController {
   findAll() {
     return this.empleadosService.findAll();
   }
+
+// Obtiene los empleados de la sucursal del usuario autenticado.
+@Get('mi-sucursal')
+findMiSucursal(@CurrentUser() user: JwtPayload) {
+  return this.empleadosService.findMiSucursal(user.sub);
+}
+
 
   @Get(':id')
   findOne(
