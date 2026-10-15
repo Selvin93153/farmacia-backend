@@ -20,6 +20,7 @@ import { VentasModule } from './ventas/ventas.module';
 import { DetallesVentaModule } from './detalles-venta/detalles-venta.module';
 import { MovimientosCajaModule } from './movimientos-caja/movimientos-caja.module';
 import { ActivosFijosModule } from './activos-fijos/activos-fijos.module';
+import { AuditoriaEfectivoModule } from './auditoria-efectivo/auditoria-efectivo.module';
 
 @Module({
   imports: [
@@ -55,7 +56,8 @@ import { ActivosFijosModule } from './activos-fijos/activos-fijos.module';
      VentasModule,
      DetallesVentaModule,
      MovimientosCajaModule,
-     ActivosFijosModule
+     ActivosFijosModule,
+      AuditoriaEfectivoModule,
   ],
   controllers: [AppController],
 })
