@@ -25,6 +25,8 @@ import { ClientesModule } from './cliente/clientes.module';
 import { PedidosModule } from './pedidos/pedidos.module';
 import { DetallesPedidoModule } from './detalles-pedido/detalles-pedido.module';
 import { EntregasModule } from './entregas/entregas.module';
+import { TrasladosModule } from './traslados/traslados.module';
+import { DetallesTrasladoModule } from './detalles-traslado/detalles-traslado.module';
 
 @Module({
   imports: [
@@ -66,6 +68,8 @@ import { EntregasModule } from './entregas/entregas.module';
       PedidosModule,
       DetallesPedidoModule,
       EntregasModule,
+      TrasladosModule,
+      DetallesTrasladoModule,
   ],
   controllers: [AppController],
 })
