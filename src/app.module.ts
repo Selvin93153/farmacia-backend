@@ -21,6 +21,10 @@ import { DetallesVentaModule } from './detalles-venta/detalles-venta.module';
 import { MovimientosCajaModule } from './movimientos-caja/movimientos-caja.module';
 import { ActivosFijosModule } from './activos-fijos/activos-fijos.module';
 import { AuditoriaEfectivoModule } from './auditoria-efectivo/auditoria-efectivo.module';
+import { ClientesModule } from './cliente/clientes.module';
+import { PedidosModule } from './pedidos/pedidos.module';
+import { DetallesPedidoModule } from './detalles-pedido/detalles-pedido.module';
+import { EntregasModule } from './entregas/entregas.module';
 
 @Module({
   imports: [
@@ -58,6 +62,10 @@ import { AuditoriaEfectivoModule } from './auditoria-efectivo/auditoria-efectivo
      MovimientosCajaModule,
      ActivosFijosModule,
       AuditoriaEfectivoModule,
+      ClientesModule,
+      PedidosModule,
+      DetallesPedidoModule,
+      EntregasModule,
   ],
   controllers: [AppController],
 })
