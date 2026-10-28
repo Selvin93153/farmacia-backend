@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Post,
@@ -9,10 +10,9 @@ import {
 import { Response } from 'express';
 
 import { AuthService } from './auth.service';
-import { LoginDto } from './dto/login.dto';
-import { Public } from './decorators/public.decorator';
-import { Get } from '@nestjs/common';
 import { CurrentUser } from './decorators/current-user.decorator';
+import { Public } from './decorators/public.decorator';
+import { LoginDto } from './dto/login.dto';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 
 @Controller('auth')
@@ -21,56 +21,78 @@ export class AuthController {
     private readonly authService: AuthService,
   ) {}
 
-//iniciar sesión
+  // Inicia sesión y guarda el JWT en una cookie HttpOnly.
   @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(
     @Body() loginDto: LoginDto,
-    @Res({ passthrough: true }) response: Response,
+    @Res({ passthrough: true })
+    response: Response,
   ) {
     const { token, usuario } =
-      await this.authService.login(loginDto);
+      await this.authService.login(
+        loginDto,
+      );
 
-    response.cookie('access_token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/',
-    });
+    response.cookie(
+      'access_token',
+      token,
+      {
+        httpOnly: true,
+
+        secure:
+          process.env.NODE_ENV ===
+          'production',
+
+        sameSite: 'lax',
+        path: '/',
+      },
+    );
 
     return {
-      message: 'Inicio de sesión exitoso',
+      message:
+        'Inicio de sesión exitoso',
+
       usuario,
     };
   }
 
-
-  //sirve para saber quién tiene la sesión actual
- @Get('me')
+  // Obtiene los datos del usuario que tiene la sesión actual.
+  @Get('me')
   me(
-    @CurrentUser() user: JwtPayload,
+    @CurrentUser()
+    user: JwtPayload,
   ) {
-    return this.authService.me(user.sub);
+    return this.authService.me(
+      user.sub,
+    );
   }
 
-
-  //borrar la cookie access_token
+  // Cierra la sesión eliminando la cookie de autenticación.
   @Post('logout')
-@HttpCode(HttpStatus.OK)
-logout(
-  @Res({ passthrough: true }) response: Response,
-) {
-  response.clearCookie('access_token', {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    path: '/',
-  });
+  @HttpCode(HttpStatus.OK)
+  logout(
+    @Res({ passthrough: true })
+    response: Response,
+  ) {
+    response.clearCookie(
+      'access_token',
+      {
+        httpOnly: true,
 
-  return {
-    message: 'Sesión cerrada correctamente',
-  };
-}
+        secure:
+          process.env.NODE_ENV ===
+          'production',
 
+        sameSite: 'lax',
+        path: '/',
+      },
+    );
+
+    return {
+      message:
+        'Sesión cerrada correctamente',
+    };
+  }
 }

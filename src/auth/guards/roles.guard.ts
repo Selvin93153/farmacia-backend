@@ -8,8 +8,13 @@ import {
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 
-import { ROLES_KEY } from '../decorators/roles.decorator';
-import { JwtPayload } from '../interfaces/jwt-payload.interface';
+import {
+  ROLES_KEY,
+} from '../decorators/roles.decorator';
+import {
+  JwtPayload,
+  RolCodigo,
+} from '../interfaces/jwt-payload.interface';
 
 interface AuthenticatedRequest extends Request {
   user?: JwtPayload;
@@ -21,11 +26,12 @@ export class RolesGuard implements CanActivate {
     private readonly reflector: Reflector,
   ) {}
 
+  // Verifica que el usuario autenticado tenga uno de los roles permitidos.
   canActivate(
     context: ExecutionContext,
   ): boolean {
     const rolesPermitidos =
-      this.reflector.getAllAndOverride<number[]>(
+      this.reflector.getAllAndOverride<RolCodigo[]>(
         ROLES_KEY,
         [
           context.getHandler(),
@@ -33,9 +39,11 @@ export class RolesGuard implements CanActivate {
         ],
       );
 
-    // Si el endpoint no tiene @Roles(), cualquier
-    // usuario autenticado puede acceder.
-    if (!rolesPermitidos || rolesPermitidos.length === 0) {
+    // Sin @Roles(), cualquier usuario autenticado puede acceder.
+    if (
+      !rolesPermitidos ||
+      rolesPermitidos.length === 0
+    ) {
       return true;
     }
 
@@ -52,7 +60,11 @@ export class RolesGuard implements CanActivate {
       );
     }
 
-    if (!rolesPermitidos.includes(usuario.id_rol)) {
+    if (
+      !rolesPermitidos.includes(
+        usuario.rol_codigo,
+      )
+    ) {
       throw new ForbiddenException(
         'No tienes permisos para realizar esta acción',
       );

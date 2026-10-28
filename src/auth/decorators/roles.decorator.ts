@@ -1,6 +1,8 @@
 import { SetMetadata } from '@nestjs/common';
 
+import { RolCodigo } from '../interfaces/jwt-payload.interface';
+
 export const ROLES_KEY = 'roles';
 
-export const Roles = (...roles: number[]) =>
+export const Roles = (...roles: RolCodigo[]) =>
   SetMetadata(ROLES_KEY, roles);

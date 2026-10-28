@@ -25,6 +25,7 @@ export class AuthGuard implements CanActivate {
     private readonly reflector: Reflector,
   ) {}
 
+  // Verifica que exista una sesión válida antes de acceder a una ruta protegida.
   async canActivate(
     context: ExecutionContext,
   ): Promise<boolean> {
@@ -46,7 +47,8 @@ export class AuthGuard implements CanActivate {
         .switchToHttp()
         .getRequest<AuthenticatedRequest>();
 
-    const token = request.cookies?.access_token;
+    const token =
+      request.cookies?.access_token;
 
     if (!token) {
       throw new UnauthorizedException(
