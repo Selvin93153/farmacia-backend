@@ -10,6 +10,7 @@ import {
 
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import type { JwtPayload } from '../auth/interfaces/jwt-payload.interface';
+import { Roles } from '../auth/decorators/roles.decorator';
 
 import { AsignarRepartidorDto } from './dto/asignar-repartidor.dto';
 import { CreateEntregaDto } from './dto/create-entrega.dto';
@@ -23,6 +24,11 @@ export class EntregasController {
   ) {}
 
   // Crea una entrega y descuenta el inventario del pedido.
+   @Roles(
+    'ADMIN_SISTEMA',
+    'ADMIN_SUCURSAL',
+    'TRABAJADOR_SUCURSAL',
+  )
   @Post()
   create(
     @Body()
@@ -38,12 +44,22 @@ export class EntregasController {
   }
 
   // Obtiene todas las entregas registradas.
+  @Roles(
+    'ADMIN_SISTEMA',
+    'ADMIN_SUCURSAL',
+    'TRABAJADOR_SUCURSAL',
+  )
   @Get()
   findAll() {
     return this.entregasService.findAll();
   }
 
   // Obtiene una entrega específica por su identificador.
+    @Roles(
+    'ADMIN_SISTEMA',
+    'ADMIN_SUCURSAL',
+    'TRABAJADOR_SUCURSAL',
+  )
   @Get(':id')
   findOne(
     @Param('id', ParseIntPipe)
@@ -53,6 +69,11 @@ export class EntregasController {
   }
 
   // Actualiza las observaciones de una entrega.
+   @Roles(
+    'ADMIN_SISTEMA',
+    'ADMIN_SUCURSAL',
+    'TRABAJADOR_SUCURSAL',
+  )
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe)
@@ -68,6 +89,12 @@ export class EntregasController {
   }
 
   // Asigna un repartidor a una entrega pendiente.
+  @Roles(
+    'ADMIN_SISTEMA',
+    'ADMIN_SUCURSAL',
+    'TRABAJADOR_SUCURSAL',
+  )
+  
   @Patch(':id/asignar-repartidor')
   asignarRepartidor(
     @Param('id', ParseIntPipe)
@@ -83,6 +110,11 @@ export class EntregasController {
   }
 
   // Inicia el recorrido de una entrega asignada.
+  @Roles(
+    'ADMIN_SISTEMA',
+    'ADMIN_SUCURSAL',
+    'TRABAJADOR_SUCURSAL',
+  )
   @Patch(':id/iniciar')
   iniciar(
     @Param('id', ParseIntPipe)
@@ -92,6 +124,11 @@ export class EntregasController {
   }
 
   // Completa una entrega y marca el pedido como entregado.
+  @Roles(
+    'ADMIN_SISTEMA',
+    'ADMIN_SUCURSAL',
+    'TRABAJADOR_SUCURSAL',
+  )
   @Patch(':id/completar')
   completar(
     @Param('id', ParseIntPipe)

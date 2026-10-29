@@ -14,6 +14,7 @@ import {
 import { UsuariosService } from './usuarios.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
+import { Roles } from '../auth/decorators/roles.decorator';
 
 @Controller('usuarios')
 export class UsuariosController {
@@ -21,6 +22,9 @@ export class UsuariosController {
     private readonly usuariosService: UsuariosService,
   ) {}
 
+
+   // Registra un nuevo usuario.
+  @Roles('ADMIN_SISTEMA')
   @Post()
   create(
     @Body() createUsuarioDto: CreateUsuarioDto,
@@ -30,11 +34,25 @@ export class UsuariosController {
     );
   }
 
+   @Roles(
+    'ADMIN_SISTEMA',
+    'ADMIN_SUCURSAL',
+    'INVENTARIO',
+    'TRABAJADOR_SUCURSAL',
+    'RRHH',
+  )
   @Get()
   findAll() {
     return this.usuariosService.findAll();
   }
 
+   @Roles(
+    'ADMIN_SISTEMA',
+    'ADMIN_SUCURSAL',
+    'INVENTARIO',
+    'TRABAJADOR_SUCURSAL',
+    'RRHH',
+  )
   @Get(':id')
   findOne(
     @Param('id', ParseIntPipe) id: number,
@@ -42,6 +60,10 @@ export class UsuariosController {
     return this.usuariosService.findOne(id);
   }
 
+   @Roles(
+    'ADMIN_SISTEMA',
+    'ADMIN_SUCURSAL',
+  )
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,

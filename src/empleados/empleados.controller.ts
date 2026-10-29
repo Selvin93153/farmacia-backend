@@ -13,6 +13,7 @@ import {
 
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { JwtPayload } from '../auth/interfaces/jwt-payload.interface';
+import { Roles } from '../auth/decorators/roles.decorator';
 
 import { EmpleadosService } from './empleados.service';
 import { CreateEmpleadoDto } from './dto/create-empleado.dto';
@@ -25,6 +26,11 @@ export class EmpleadosController {
       EmpleadosService,
   ) {}
 
+   // Registra un nuevo empleado.
+  @Roles(
+    'ADMIN_SISTEMA',
+    'RRHH',
+  )
   @Post()
   create(
     @Body()
@@ -35,6 +41,11 @@ export class EmpleadosController {
     );
   }
 
+   // Obtiene todos los empleados registrados.
+  @Roles(
+    'ADMIN_SISTEMA',
+    'RRHH',
+  )
   @Get()
   findAll() {
     return this.empleadosService.findAll();
@@ -46,7 +57,12 @@ findMiSucursal(@CurrentUser() user: JwtPayload) {
   return this.empleadosService.findMiSucursal(user.sub);
 }
 
-
+ // Obtiene un empleado por su identificador.
+  @Roles(
+    'ADMIN_SISTEMA',
+    'ADMIN_SUCURSAL',
+    'RRHH',
+  )
   @Get(':id')
   findOne(
     @Param('id', ParseIntPipe)
@@ -55,6 +71,11 @@ findMiSucursal(@CurrentUser() user: JwtPayload) {
     return this.empleadosService.findOne(id);
   }
 
+    // Actualiza los datos de un empleado.
+  @Roles(
+    'ADMIN_SISTEMA',
+    'RRHH',
+  )
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe)
@@ -69,6 +90,10 @@ findMiSucursal(@CurrentUser() user: JwtPayload) {
     );
   }
 
+  // Elimina un empleado registrado.
+  @Roles(
+    'ADMIN_SISTEMA',
+  )
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(

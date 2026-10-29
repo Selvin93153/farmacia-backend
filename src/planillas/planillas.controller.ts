@@ -14,6 +14,7 @@ import {
 import { PlanillasService } from './planillas.service';
 import { CreatePlanillaDto } from './dto/create-planilla.dto';
 import { UpdatePlanillaDto } from './dto/update-planilla.dto';
+import { Roles } from '../auth/decorators/roles.decorator';
 
 @Controller('planillas')
 export class PlanillasController {
@@ -22,6 +23,12 @@ export class PlanillasController {
       PlanillasService,
   ) {}
 
+
+   // Registra una nueva planilla.
+  @Roles(
+    'ADMIN_SISTEMA',
+    'RRHH',
+  )
   @Post()
   create(
     @Body()
@@ -32,11 +39,21 @@ export class PlanillasController {
     );
   }
 
+  // Obtiene todas las planillas registradas.
+  @Roles(
+    'ADMIN_SISTEMA',
+    'RRHH',
+  )
   @Get()
   findAll() {
     return this.planillasService.findAll();
   }
 
+    // Obtiene una planilla por su identificador.
+  @Roles(
+    'ADMIN_SISTEMA',
+    'RRHH',
+  )
   @Get(':id')
   findOne(
     @Param('id', ParseIntPipe)
@@ -45,6 +62,12 @@ export class PlanillasController {
     return this.planillasService.findOne(id);
   }
 
+
+   // Actualiza los datos de una planilla.
+  @Roles(
+    'ADMIN_SISTEMA',
+    'RRHH',
+  )
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe)
@@ -59,6 +82,12 @@ export class PlanillasController {
     );
   }
 
+
+   // Elimina una planilla registrada.
+  @Roles(
+    'ADMIN_SISTEMA',
+    'RRHH',
+  )
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(

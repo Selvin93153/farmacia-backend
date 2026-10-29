@@ -14,6 +14,7 @@ import {
 import { DetallesPlanillaService } from './detalles-planilla.service';
 import { CreateDetallePlanillaDto } from './dto/create-detalle-planilla.dto';
 import { UpdateDetallePlanillaDto } from './dto/update-detalle-planilla.dto';
+import { Roles } from '../auth/decorators/roles.decorator';
 
 @Controller('detalles-planilla')
 export class DetallesPlanillaController {
@@ -22,6 +23,12 @@ export class DetallesPlanillaController {
       DetallesPlanillaService,
   ) {}
 
+
+    // Registra un nuevo detalle de planilla.
+  @Roles(
+    'ADMIN_SISTEMA',
+    'RRHH',
+  )
   @Post()
   create(
     @Body()
@@ -32,11 +39,22 @@ export class DetallesPlanillaController {
     );
   }
 
+  // Obtiene todos los detalles de planilla.
+  @Roles(
+    'ADMIN_SISTEMA',
+    'RRHH',
+  )
   @Get()
   findAll() {
     return this.detallesService.findAll();
   }
 
+
+  // Obtiene un detalle de planilla por su identificador.
+  @Roles(
+    'ADMIN_SISTEMA',
+    'RRHH',
+  )
   @Get(':id')
   findOne(
     @Param('id', ParseIntPipe)
@@ -45,6 +63,12 @@ export class DetallesPlanillaController {
     return this.detallesService.findOne(id);
   }
 
+
+   // Actualiza un detalle de planilla.
+  @Roles(
+    'ADMIN_SISTEMA',
+    'RRHH',
+  )
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe)
@@ -59,6 +83,11 @@ export class DetallesPlanillaController {
     );
   }
 
+
+    // Elimina un detalle de planilla.
+  @Roles(
+    'ADMIN_SISTEMA',
+  )
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(

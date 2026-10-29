@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -147,6 +148,12 @@ export class PedidosService {
       );
     }
 
+    if (usuario.id_sucursal === null) {
+      throw new ForbiddenException(
+        'El usuario no tiene una sucursal asignada para registrar pedidos.',
+      );
+    }
+
     let idFormaPago: number | null = null;
 
     if (
@@ -181,6 +188,10 @@ export class PedidosService {
       this.pedidoRepository.create({
         id_cliente:
           cliente.id_cliente,
+
+        // La sucursal de origen se obtiene de la sesión, no del frontend.
+        id_sucursal_origen:
+          usuario.id_sucursal,
 
         id_sucursal_asignada: null,
 
@@ -222,6 +233,63 @@ export class PedidosService {
     return this.pedidoRepository.find({
       relations: {
         cliente: true,
+
+        sucursal_origen: true,
+
+        sucursal_asignada: {
+          municipio: {
+            departamento: true,
+          },
+        },
+
+        forma_pago: true,
+
+        usuario_registra: {
+          rol: true,
+        },
+      },
+
+      order: {
+        fecha: 'DESC',
+        id_pedido: 'DESC',
+      },
+    });
+  }
+
+  // Obtiene únicamente los pedidos registrados desde la sucursal del usuario autenticado.
+  async findAllMiSucursal(
+    idUsuario: number,
+  ): Promise<Pedido[]> {
+    const usuario =
+      await this.usuarioRepository.findOne({
+        where: {
+          id_usuario: idUsuario,
+          estado: 'ACTIVO',
+        },
+      });
+
+    if (!usuario) {
+      throw new NotFoundException(
+        'El usuario autenticado no existe o está inactivo.',
+      );
+    }
+
+    if (usuario.id_sucursal === null) {
+      throw new ForbiddenException(
+        'El usuario no tiene una sucursal asignada.',
+      );
+    }
+
+    return this.pedidoRepository.find({
+      where: {
+        id_sucursal_origen:
+          usuario.id_sucursal,
+      },
+
+      relations: {
+        cliente: true,
+
+        sucursal_origen: true,
 
         sucursal_asignada: {
           municipio: {

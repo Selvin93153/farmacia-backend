@@ -24,6 +24,12 @@ export class Pedido {
     type: 'int',
     nullable: true,
   })
+  id_sucursal_origen!: number | null;
+
+  @Column({
+    type: 'int',
+    nullable: true,
+  })
   id_sucursal_asignada!: number | null;
 
   @Column({
@@ -95,6 +101,15 @@ export class Pedido {
     name: 'id_cliente',
   })
   cliente!: Cliente;
+
+  @ManyToOne(() => Sucursal, {
+    nullable: true,
+    onDelete: 'RESTRICT',
+  })
+  @JoinColumn({
+    name: 'id_sucursal_origen',
+  })
+  sucursal_origen!: Sucursal | null;
 
   @ManyToOne(() => Sucursal, {
     nullable: true,

@@ -17,6 +17,7 @@ import { UpdateInventarioDto } from './dto/update-inventario.dto';
 
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { JwtPayload } from '../auth/interfaces/jwt-payload.interface';
+import { Roles } from '../auth/decorators/roles.decorator';
 
 
 @Controller('inventarios')
@@ -25,6 +26,12 @@ export class InventariosController {
     private readonly inventariosService: InventariosService,
   ) {}
 
+    // Registra un nuevo inventario.
+  @Roles(
+    'ADMIN_SISTEMA',
+    'ADMIN_SUCURSAL',
+    'INVENTARIO',
+  )
   @Post()
   create(
     @Body()
@@ -35,12 +42,21 @@ export class InventariosController {
     );
   }
 
+  @Roles(
+    'ADMIN_SISTEMA',
+    'ADMIN_SUCURSAL',
+    'INVENTARIO',
+  )
   @Get()
   findAll() {
     return this.inventariosService.findAll();
   }
 
   // Obtiene los inventarios de la sucursal del usuario autenticado.
+    @Roles(
+    'ADMIN_SUCURSAL',
+    'INVENTARIO',
+  )
 @Get('mi-sucursal')
 findMiSucursal(
   @CurrentUser() user: JwtPayload,
@@ -48,6 +64,12 @@ findMiSucursal(
   return this.inventariosService.findMiSucursal(user.sub);
 }
 
+ // Obtiene un inventario específico por su identificador.
+  @Roles(
+    'ADMIN_SISTEMA',
+    'ADMIN_SUCURSAL',
+    'INVENTARIO',
+  )
   @Get(':id')
   findOne(
     @Param('id', ParseIntPipe)
@@ -56,6 +78,12 @@ findMiSucursal(
     return this.inventariosService.findOne(id);
   }
 
+   // Actualiza los datos de un inventario.
+  @Roles(
+    'ADMIN_SISTEMA',
+    'ADMIN_SUCURSAL',
+    'INVENTARIO',
+  )
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe)
@@ -70,6 +98,10 @@ findMiSucursal(
     );
   }
 
+    // Elimina un inventario registrado.
+  @Roles(
+    'ADMIN_SISTEMA',
+  )
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(
