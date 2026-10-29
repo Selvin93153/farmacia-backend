@@ -14,7 +14,11 @@ import {
 import { UsuariosService } from './usuarios.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
+import { CambiarPasswordDto } from './dto/cambiar-password.dto';
+
 import { Roles } from '../auth/decorators/roles.decorator';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { JwtPayload } from '../auth/interfaces/jwt-payload.interface';
 
 @Controller('usuarios')
 export class UsuariosController {
@@ -22,8 +26,7 @@ export class UsuariosController {
     private readonly usuariosService: UsuariosService,
   ) {}
 
-
-   // Registra un nuevo usuario.
+  // Registra un nuevo usuario.
   @Roles('ADMIN_SISTEMA')
   @Post()
   create(
@@ -34,7 +37,26 @@ export class UsuariosController {
     );
   }
 
-   @Roles(
+  // Permite al usuario autenticado cambiar su propia contraseña.
+  @Roles(
+    'ADMIN_SISTEMA',
+    'ADMIN_SUCURSAL',
+    'INVENTARIO',
+    'TRABAJADOR_SUCURSAL',
+    'RRHH',
+  )
+  @Patch('cambiar-password')
+  cambiarPassword(
+    @CurrentUser() user: JwtPayload,
+    @Body() cambiarPasswordDto: CambiarPasswordDto,
+  ) {
+    return this.usuariosService.cambiarPassword(
+      user.sub,
+      cambiarPasswordDto,
+    );
+  }
+
+  @Roles(
     'ADMIN_SISTEMA',
     'ADMIN_SUCURSAL',
     'INVENTARIO',
@@ -46,7 +68,7 @@ export class UsuariosController {
     return this.usuariosService.findAll();
   }
 
-   @Roles(
+  @Roles(
     'ADMIN_SISTEMA',
     'ADMIN_SUCURSAL',
     'INVENTARIO',
@@ -60,7 +82,7 @@ export class UsuariosController {
     return this.usuariosService.findOne(id);
   }
 
-   @Roles(
+  @Roles(
     'ADMIN_SISTEMA',
     'ADMIN_SUCURSAL',
   )

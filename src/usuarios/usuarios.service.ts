@@ -12,6 +12,7 @@ import { Usuario } from './entities/usuario.entity';
 import { Rol } from '../roles/entities/rol.entity';
 import { Sucursal } from '../sucursales/entities/sucursal.entity';
 import { Empleado } from '../empleados/entities/empleado.entity';
+import { CambiarPasswordDto } from './dto/cambiar-password.dto';
 
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
@@ -143,6 +144,76 @@ export class UsuariosService {
       this.handleDatabaseError(error);
     }
   }
+
+
+
+  // Cambia la contraseña del usuario autenticado validando primero la contraseña actual.
+async cambiarPassword(
+  id_usuario: number,
+  cambiarPasswordDto: CambiarPasswordDto,
+): Promise<{ message: string }> {
+  const usuario = await this.usuarioRepository
+    .createQueryBuilder('usuario')
+    .addSelect('usuario.password')
+    .where(
+      'usuario.id_usuario = :id_usuario',
+      {
+        id_usuario,
+      },
+    )
+    .getOne();
+
+  if (!usuario) {
+    throw new NotFoundException(
+      'El usuario no existe',
+    );
+  }
+
+  const passwordActualValida =
+    await argon2.verify(
+      usuario.password,
+      cambiarPasswordDto.password_actual,
+    );
+
+  if (!passwordActualValida) {
+    throw new BadRequestException(
+      'La contraseña actual es incorrecta',
+    );
+  }
+
+  if (
+    cambiarPasswordDto.password_nueva !==
+    cambiarPasswordDto.confirmar_password
+  ) {
+    throw new BadRequestException(
+      'La nueva contraseña y su confirmación no coinciden',
+    );
+  }
+
+  const mismaPassword =
+    await argon2.verify(
+      usuario.password,
+      cambiarPasswordDto.password_nueva,
+    );
+
+  if (mismaPassword) {
+    throw new BadRequestException(
+      'La nueva contraseña debe ser diferente de la contraseña actual',
+    );
+  }
+
+  usuario.password = await argon2.hash(
+    cambiarPasswordDto.password_nueva,
+  );
+
+  await this.usuarioRepository.save(usuario);
+
+  return {
+    message:
+      'Contraseña actualizada correctamente',
+  };
+}
+
 
   async remove(id: number): Promise<void> {
     const usuario = await this.findOne(id);
