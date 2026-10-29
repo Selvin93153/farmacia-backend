@@ -1,22 +1,18 @@
-import {
-  Injectable,
-  OnApplicationBootstrap,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { Rol } from '../entities/rol.entity';
 
 @Injectable()
-export class RolesSeederService
-  implements OnApplicationBootstrap
-{
+export class RolesSeederService {
   constructor(
     @InjectRepository(Rol)
     private readonly rolRepository: Repository<Rol>,
   ) {}
 
-  async onApplicationBootstrap(): Promise<void> {
+  // Crea o actualiza los roles base del sistema.
+  async seed(): Promise<void> {
     const rolesBase = [
       {
         codigo: 'ADMIN_SISTEMA',

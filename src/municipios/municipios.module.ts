@@ -20,7 +20,7 @@ import { MunicipiosSeederService } from './seed/municipios-seeder.service';
     MunicipiosService, MunicipiosSeederService,
   ],
   exports: [
-    MunicipiosService,
+    MunicipiosService, MunicipiosSeederService,
   ],
 })
 export class MunicipiosModule {}

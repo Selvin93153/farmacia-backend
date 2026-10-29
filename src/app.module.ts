@@ -27,6 +27,7 @@ import { DetallesPedidoModule } from './detalles-pedido/detalles-pedido.module';
 import { EntregasModule } from './entregas/entregas.module';
 import { TrasladosModule } from './traslados/traslados.module';
 import { DetallesTrasladoModule } from './detalles-traslado/detalles-traslado.module';
+import { SeedersModule } from './seeders/seeders.module';
 
 @Module({
   imports: [
@@ -70,6 +71,7 @@ import { DetallesTrasladoModule } from './detalles-traslado/detalles-traslado.mo
       EntregasModule,
       TrasladosModule,
       DetallesTrasladoModule,
+      SeedersModule,
   ],
   controllers: [AppController],
 })

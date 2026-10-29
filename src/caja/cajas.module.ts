@@ -7,6 +7,7 @@ import { Sucursal } from '../sucursales/entities/sucursal.entity';
 import { CajasController } from './cajas.controller';
 import { CajasService } from './cajas.service';
 import { Usuario } from '../usuarios/entities/usuario.entity';
+import { CajasSeederService } from './seed/cajas-seeder.service';
 
 @Module({
   imports: [
@@ -20,10 +21,10 @@ import { Usuario } from '../usuarios/entities/usuario.entity';
     CajasController,
   ],
   providers: [
-    CajasService,
+    CajasService,   CajasSeederService,
   ],
   exports: [
-    CajasService,
+    CajasService,   CajasSeederService,
   ],
 })
 export class CajasModule {}

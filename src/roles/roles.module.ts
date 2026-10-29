@@ -11,6 +11,6 @@ import { RolesSeederService } from './seed/roles-seeder.service';
   imports: [TypeOrmModule.forFeature([Rol])],
   controllers: [RolesController],
   providers: [RolesService, RolesSeederService],
-  exports: [RolesService],
+  exports: [RolesService,   RolesSeederService,],
 })
 export class RolesModule {}

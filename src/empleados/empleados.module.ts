@@ -7,6 +7,7 @@ import { Usuario } from '../usuarios/entities/usuario.entity';
 
 import { EmpleadosController } from './empleados.controller';
 import { EmpleadosService } from './empleados.service';
+import { EmpleadosSeederService } from './seed/empleados-seeder.service';
 
 @Module({
   imports: [
@@ -20,10 +21,10 @@ import { EmpleadosService } from './empleados.service';
     EmpleadosController,
   ],
   providers: [
-    EmpleadosService,
+    EmpleadosService,EmpleadosSeederService,
   ],
   exports: [
-    EmpleadosService,
+    EmpleadosService,EmpleadosSeederService,
   ],
 })
 export class EmpleadosModule {}

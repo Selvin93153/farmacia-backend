@@ -17,7 +17,7 @@ import { DepartamentosSeederService } from './seed/departamentos-seeder.service'
     DepartamentosService, DepartamentosSeederService,
   ],
   exports: [
-    DepartamentosService,
+    DepartamentosService, DepartamentosSeederService,
   ],
 })
 export class DepartamentosModule {}

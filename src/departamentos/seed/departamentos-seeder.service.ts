@@ -1,22 +1,18 @@
-import {
-  Injectable,
-  OnApplicationBootstrap,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { Departamento } from '../entities/departamento.entity';
 
 @Injectable()
-export class DepartamentosSeederService
-  implements OnApplicationBootstrap
-{
+export class DepartamentosSeederService {
   constructor(
     @InjectRepository(Departamento)
     private readonly departamentoRepository: Repository<Departamento>,
   ) {}
 
-  async onApplicationBootstrap(): Promise<void> {
+  // Crea y verifica los departamentos base del sistema.
+  async seed(): Promise<void> {
     const departamentosBase = [
       'Alta Verapaz',
       'Baja Verapaz',
@@ -51,8 +47,11 @@ export class DepartamentosSeederService
         });
 
       if (departamentoExistente) {
-        if (departamentoExistente.estado !== 'ACTIVO') {
-          departamentoExistente.estado = 'ACTIVO';
+        if (
+          departamentoExistente.estado !== 'ACTIVO'
+        ) {
+          departamentoExistente.estado =
+            'ACTIVO';
 
           await this.departamentoRepository.save(
             departamentoExistente,

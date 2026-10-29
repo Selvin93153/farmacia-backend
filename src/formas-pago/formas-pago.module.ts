@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { FormaPago } from './entities/forma-pago.entity';
 import { FormasPagoController } from './formas-pago.controller';
 import { FormasPagoService } from './formas-pago.service';
+import { FormasPagoSeederService } from './seed/formas-pago-seeder.service';
 
 @Module({
   imports: [
@@ -15,10 +16,10 @@ import { FormasPagoService } from './formas-pago.service';
     FormasPagoController,
   ],
   providers: [
-    FormasPagoService,
+    FormasPagoService, FormasPagoSeederService,
   ],
   exports: [
-    FormasPagoService,
+    FormasPagoService, FormasPagoSeederService,
   ],
 })
 export class FormasPagoModule {}

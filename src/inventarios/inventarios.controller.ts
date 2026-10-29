@@ -46,6 +46,7 @@ export class InventariosController {
     'ADMIN_SISTEMA',
     'ADMIN_SUCURSAL',
     'INVENTARIO',
+    'TRABAJADOR_SUCURSAL'
   )
   @Get()
   findAll() {
@@ -56,6 +57,7 @@ export class InventariosController {
     @Roles(
     'ADMIN_SUCURSAL',
     'INVENTARIO',
+    'TRABAJADOR_SUCURSAL'
   )
 @Get('mi-sucursal')
 findMiSucursal(
@@ -69,6 +71,7 @@ findMiSucursal(
     'ADMIN_SISTEMA',
     'ADMIN_SUCURSAL',
     'INVENTARIO',
+    'TRABAJADOR_SUCURSAL'
   )
   @Get(':id')
   findOne(

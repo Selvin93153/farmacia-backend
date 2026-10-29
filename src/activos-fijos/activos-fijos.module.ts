@@ -6,6 +6,7 @@ import { Usuario } from '../usuarios/entities/usuario.entity';
 import { ActivosFijosController } from './activos-fijos.controller';
 import { ActivosFijosService } from './activos-fijos.service';
 import { ActivoFijo } from './entities/activo-fijo.entity';
+import { ActivosFijosSeederService } from './seed/activos-fijos-seeder.service';
 
 @Module({
   imports: [
@@ -19,10 +20,10 @@ import { ActivoFijo } from './entities/activo-fijo.entity';
     ActivosFijosController,
   ],
   providers: [
-    ActivosFijosService,
+    ActivosFijosService, ActivosFijosSeederService,
   ],
   exports: [
-    ActivosFijosService,
+    ActivosFijosService, ActivosFijosSeederService,
   ],
 })
 export class ActivosFijosModule {}

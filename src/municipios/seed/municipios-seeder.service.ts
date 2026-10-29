@@ -1,7 +1,4 @@
-import {
-  Injectable,
-  OnApplicationBootstrap,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -9,9 +6,7 @@ import { Departamento } from '../../departamentos/entities/departamento.entity';
 import { Municipio } from '../entities/municipio.entity';
 
 @Injectable()
-export class MunicipiosSeederService
-  implements OnApplicationBootstrap
-{
+export class MunicipiosSeederService {
   constructor(
     @InjectRepository(Municipio)
     private readonly municipioRepository: Repository<Municipio>,
@@ -20,7 +15,8 @@ export class MunicipiosSeederService
     private readonly departamentoRepository: Repository<Departamento>,
   ) {}
 
-  async onApplicationBootstrap(): Promise<void> {
+  // Crea y verifica los municipios base del sistema.
+  async seed(): Promise<void> {
     const municipiosPorDepartamento: Record<string, string[]> = {
       Guatemala: [
         'Guatemala',
@@ -454,7 +450,9 @@ export class MunicipiosSeederService
     for (const [nombreDepartamento, municipios] of Object.entries(
       municipiosPorDepartamento,
     )) {
-      const departamento = departamentosMap.get(nombreDepartamento);
+      const departamento = departamentosMap.get(
+        nombreDepartamento,
+      );
 
       if (!departamento) {
         throw new Error(
@@ -466,29 +464,41 @@ export class MunicipiosSeederService
         const clave =
           `${departamento.id_departamento}-${nombreMunicipio}`;
 
-        const municipioExistente = municipiosMap.get(clave);
+        const municipioExistente =
+          municipiosMap.get(clave);
 
         if (municipioExistente) {
           if (municipioExistente.estado !== 'ACTIVO') {
             municipioExistente.estado = 'ACTIVO';
-            municipiosGuardar.push(municipioExistente);
+
+            municipiosGuardar.push(
+              municipioExistente,
+            );
           }
 
           continue;
         }
 
-        const nuevoMunicipio = this.municipioRepository.create({
-          id_departamento: departamento.id_departamento,
-          nombre: nombreMunicipio,
-          estado: 'ACTIVO',
-        });
+        const nuevoMunicipio =
+          this.municipioRepository.create({
+            id_departamento:
+              departamento.id_departamento,
 
-        municipiosGuardar.push(nuevoMunicipio);
+            nombre: nombreMunicipio,
+
+            estado: 'ACTIVO',
+          });
+
+        municipiosGuardar.push(
+          nuevoMunicipio,
+        );
       }
     }
 
     if (municipiosGuardar.length > 0) {
-      await this.municipioRepository.save(municipiosGuardar);
+      await this.municipioRepository.save(
+        municipiosGuardar,
+      );
     }
 
     console.log(

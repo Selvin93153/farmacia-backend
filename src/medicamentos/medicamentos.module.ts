@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Medicamento } from './entities/medicamento.entity';
 import { MedicamentosController } from './medicamentos.controller';
 import { MedicamentosService } from './medicamentos.service';
+import { MedicamentosSeederService } from './seed/medicamentos-seeder.service';
 
 @Module({
   imports: [
@@ -14,9 +15,11 @@ import { MedicamentosService } from './medicamentos.service';
   ],
   providers: [
     MedicamentosService,
+    MedicamentosSeederService,
   ],
   exports: [
     MedicamentosService,
+    MedicamentosSeederService,
   ],
 })
 export class MedicamentosModule {}

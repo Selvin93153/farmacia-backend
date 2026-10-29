@@ -5,6 +5,7 @@ import { Sucursal } from './entities/sucursal.entity';
 import { Municipio } from '../municipios/entities/municipio.entity';
 import { SucursalesController } from './sucursales.controller';
 import { SucursalesService } from './sucursales.service';
+import { SucursalesSeederService } from './seed/sucursales-seeder.service';
 
 @Module({
   imports: [
@@ -18,9 +19,11 @@ import { SucursalesService } from './sucursales.service';
   ],
   providers: [
     SucursalesService,
+    SucursalesSeederService,
   ],
   exports: [
     SucursalesService,
+    SucursalesSeederService,
   ],
 })
 export class SucursalesModule {}

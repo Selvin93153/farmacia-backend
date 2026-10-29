@@ -7,6 +7,8 @@ import { Sucursal } from '../sucursales/entities/sucursal.entity';
 
 import { UsuariosController } from './usuarios.controller';
 import { UsuariosService } from './usuarios.service';
+import { UsuariosSeederService } from './seed/usuarios-seeder.service';
+import { Empleado } from '../empleados/entities/empleado.entity';
 
 @Module({
   imports: [
@@ -14,6 +16,7 @@ import { UsuariosService } from './usuarios.service';
       Usuario,
       Rol,
       Sucursal,
+      Empleado,
     ]),
   ],
   controllers: [
@@ -21,9 +24,11 @@ import { UsuariosService } from './usuarios.service';
   ],
   providers: [
     UsuariosService,
+     UsuariosSeederService,
   ],
   exports: [
     UsuariosService,
+     UsuariosSeederService,
   ],
 })
 export class UsuariosModule {}
