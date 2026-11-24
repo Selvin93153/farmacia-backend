@@ -72,6 +72,7 @@ export class AuthController {
     );
   }
 
+  
   // Cierra la sesión eliminando la cookie de autenticación.
   @Post('logout')
   @HttpCode(HttpStatus.OK)
@@ -88,7 +89,11 @@ export class AuthController {
           process.env.NODE_ENV ===
           'production',
 
-        sameSite: 'lax',
+        sameSite:
+          process.env.NODE_ENV === 'production'
+            ? 'none'
+            : 'lax',
+
         path: '/',
       },
     );
@@ -98,4 +103,4 @@ export class AuthController {
         'Sesión cerrada correctamente',
     };
   }
-}
+ }
