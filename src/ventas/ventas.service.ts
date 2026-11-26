@@ -280,6 +280,12 @@ async findDetalles(
     }
   }
 
+  /**
+ * Finaliza una venta mediante una transacción.
+ * Valida la venta y el usuario, verifica y descuenta el inventario,
+ * registra los movimientos de inventario y caja, y cambia el estado
+ * de la venta a COMPLETADA. Si ocurre un error, revierte los cambios.
+ */
  async finalizar(
   id: number,
   id_usuario: number,

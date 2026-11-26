@@ -31,7 +31,7 @@ export class VentasController {
   )
 
 
-   // Finaliza una venta registrada.
+   // Finaliza una venta registrada y descuenta del stock.
   @Roles('TRABAJADOR_SUCURSAL')
   @Post()
   create(

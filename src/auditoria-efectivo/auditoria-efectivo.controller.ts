@@ -13,7 +13,7 @@ export class AuditoriaEfectivoController {
     private readonly auditoriaEfectivoService: AuditoriaEfectivoService,
   ) {}
 
-  // Obtiene los totales consolidados del flujo de efectivo.
+  // Obtiene los totales consolidados del flujo de efectivo ingresos, egresos y movimientos .
   @Get('resumen')
   obtenerResumen(
     @Query()
